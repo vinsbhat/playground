@@ -24,14 +24,16 @@ public class SearchableActivity extends AppCompatActivity {
         txt = (TextView)findViewById(R.id.textView);
 
         Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            txt.setText("Searching by: "+ query);
-
-        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
-            mHandler = new MyHandler(this);
+//        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+//            String query = intent.getStringExtra(SearchManager.QUERY);
+//            txt.setText("Searching by: "+ query);
+//
+//        } else if (Intent.ACTION_VIEW.equals(intent.getAction())) {
+//            mHandler = new MyHandler(this);
+//            mHandler.startQuery(0, null, intent.getData(), null, null, null, null);
+//        }
+        mHandler = new MyHandler(this);
             mHandler.startQuery(0, null, intent.getData(), null, null, null, null);
-        }
     }
 
     public void updateText(String text){

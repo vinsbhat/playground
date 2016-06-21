@@ -41,7 +41,6 @@ public class CitySuggestionProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection,
                         String[] selectionArgs, String sortOrder) {
         if (cities == null || cities.isEmpty()){
-            Log.d("NGVL", "WEB");
             OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url("https://dl.dropboxusercontent.com/u/6802536/cidades.json")
@@ -63,8 +62,6 @@ public class CitySuggestionProvider extends ContentProvider {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        } else {
-            Log.d("NGVL", "Cache!");
         }
 
         MatrixCursor cursor = new MatrixCursor(
@@ -74,24 +71,17 @@ public class CitySuggestionProvider extends ContentProvider {
                         SearchManager.SUGGEST_COLUMN_INTENT_DATA_ID
                 }
         );
+        if (cities != null) {
+            String query = uri.getLastPathSegment().toUpperCase();
+            int limit = Integer.parseInt(uri.getQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT));
 
-        if (mUriMatcher.match(uri) == TYPE_ALL_SUGGESTIONS) {
-            if (cities != null) {
-                String query = uri.getLastPathSegment().toUpperCase();
-                int limit = Integer.parseInt(uri.getQueryParameter(SearchManager.SUGGEST_PARAMETER_LIMIT));
-
-                int lenght = cities.size();
-                for (int i = 0; i < lenght && cursor.getCount() < limit; i++) {
-                    String city = cities.get(i);
-                    if (city.toUpperCase().contains(query)) {
-                        cursor.addRow(new Object[]{i, city, i});
-                    }
+            int lenght = cities.size();
+            for (int i = 0; i < lenght && cursor.getCount() < limit; i++) {
+                String city = cities.get(i);
+                if (city.toUpperCase().contains(query)){
+                    cursor.addRow(new Object[]{ i, city, i });
                 }
             }
-        } else if (mUriMatcher.match(uri) == TYPE_SINGLE_SUGGESTION) {
-            int position = Integer.parseInt(uri.getLastPathSegment());
-            String city = cities.get(position);
-            cursor.addRow(new Object[]{position, city, position});
         }
         return cursor;
     }
